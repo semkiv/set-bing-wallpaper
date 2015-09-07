@@ -1,6 +1,6 @@
 #!/bin/bash
 # License: GNU General Public License v3.0
-# Description: Downloads Bing picture of the day and set it as your desktop background.
+# Description: Downloads Bing picture of the day and sets it as your desktop background.
 
 
 # $bing is used to form the fully qualified URL for the Bing pic of the day
