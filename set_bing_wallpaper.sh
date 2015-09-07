@@ -45,6 +45,9 @@ for picRes in _1920x1200 _1366x768 _1280x720 _1024x768; do
 
 		# Set the GNOME 3 wallpaper picture options
 		PID=$(pgrep -n gnome-session) DBUS_SESSION_BUS_ADDRESS=$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/$PID/environ|cut -d= -f2-) DISPLAY=:0 dconf write "/org/gnome/desktop/background/picture-options" '"'$picOpts'"'
+		
+		#Send the notification
+		PID=$(pgrep -n gnome-session) DBUS_SESSION_BUS_ADDRESS=$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/$PID/environ|cut -d= -f2-) DISPLAY=:0 notify-send "Bing wallpaper" "The Bing picture of the day \"$picName\" has been downloaded and set as your desktop wallpaper"
 
 		# Exit the script
 		exit 0
