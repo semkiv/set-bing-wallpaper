@@ -27,13 +27,13 @@ picOpts="zoom"
 picExt=".jpg"
 
 # Create saveDir if it does not already exist
-mkdir -p $saveDir
+mkdir -p "$saveDir"
 
 # Download the highest resolution
 for picRes in _1920x1200 _1366x768 _1280x720 _1024x768; do
 
 	# Extract the relative URL of the Bing pic of the day from the XML data retrieved from xmlURL, form the fully qualified URL for the pic of the day, and store it in $picURL
-    	picURL=$bing$(echo $(curl -s $xmlURL) | grep -oP "<urlBase>(.*)</urlBase>" | cut -d ">" -f 2 | cut -d "<" -f 1)$picRes$picExt
+    	picURL="$bing$(echo "$(curl -s "$xmlURL")" | grep -oP "<urlBase>(.*)</urlBase>" | cut -d ">" -f 2 | cut -d "<" -f 1)$picRes$picExt"
 
     	# $picName contains the filename of the Bing pic of the day
    	 	picName=$(basename "$picURL")
@@ -41,13 +41,13 @@ for picRes in _1920x1200 _1366x768 _1280x720 _1024x768; do
     	# Download the Bing pic of the day
     	if curl -f -s -o $saveDir$picName $picURL; then
 		# Set the GNOME3 wallpaper
-		PID=$(pgrep -n gnome-session) DBUS_SESSION_BUS_ADDRESS=$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/$PID/environ|cut -d= -f2-) DISPLAY=:0 dconf write "/org/gnome/desktop/background/picture-uri" '"file://'$saveDir$picName'"'
+		PID="$(pgrep -n gnome-session)" DBUS_SESSION_BUS_ADDRESS="$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/$PID/environ | cut -d= -f2-)" DISPLAY=:0 dconf write "/org/gnome/desktop/background/picture-uri" "\"file://$saveDir$picName\""
 
 		# Set the GNOME 3 wallpaper picture options
-		PID=$(pgrep -n gnome-session) DBUS_SESSION_BUS_ADDRESS=$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/$PID/environ|cut -d= -f2-) DISPLAY=:0 dconf write "/org/gnome/desktop/background/picture-options" '"'$picOpts'"'
+		PID="$(pgrep -n gnome-session)" DBUS_SESSION_BUS_ADDRESS="$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/$PID/environ | cut -d= -f2-)" DISPLAY=:0 dconf write "/org/gnome/desktop/background/picture-options" "\"$picOpts\""
 		
 		#Send the notification
-		PID=$(pgrep -n gnome-session) DBUS_SESSION_BUS_ADDRESS=$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/$PID/environ|cut -d= -f2-) DISPLAY=:0 notify-send "Bing wallpaper" "The Bing picture of the day \"$picName\" has been downloaded and set as your desktop wallpaper"
+		PID="$(pgrep -n gnome-session)" DBUS_SESSION_BUS_ADDRESS="$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/$PID/environ | cut -d= -f2-)" DISPLAY=:0 notify-send "Bing wallpaper" "The Bing picture of the day \"$picName\" has been downloaded and set as your desktop wallpaper"
 
 		# Exit the script
 		exit 0
