@@ -1,0 +1,10 @@
+[Unit]
+Description = "Download Bing daily background image and set it as desktop background daily at 13:00"
+
+[Timer]
+OnCalendar = 13:00
+Persistent = true
+Unit = set-bing-wallpaper.service
+
+[Install]
+WantedBy = timers.target

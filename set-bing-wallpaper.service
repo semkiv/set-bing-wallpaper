@@ -1,0 +1,11 @@
+[Unit]
+Description = "Download Bing daily background image and set it as desktop background"
+Requires = dbus.service
+After = dbus.service
+
+[Service]
+Type = oneshot
+ExecStart = "/home/semkiv/.set_bing_wallpaper.sh"
+
+[Install]
+WantedBy = dafault.target
