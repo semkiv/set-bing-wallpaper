@@ -6,8 +6,68 @@
 bing="www.bing.com"
 
 # The mkt parameter determines which Bing market you would like to  obtain your images from.
-# Valid values are: auto, en_US, zh-CN, ja-JP, en-AU, en-UK, de-DE, en-NZ, en-CA.
-mkt="auto"
+# Valid values are:
+# auto
+# ar-XA (Arabic - Arabia)
+# bg-BG (Bulgarian - Bulgaria)
+# cs-CZ (Czech - Czech Republic)
+# da-DK (Danish - Denmark)
+# de-AT (German - Austria)
+# de-CH (German - Switzerland)
+# de-DE (German - Germany)
+# el-GR (Greek - Greece)
+# en-AU (English - Australia)
+# en-CA (English - Canada)
+# en-GB (English - United Kingdom)
+# en-ID (English - Indonesia)
+# en-IE (English - Ireland)
+# en-IN (English - India)
+# en-MY (English - Malaysia)
+# en-NZ (English - New Zealand)
+# en-PH (English - Philippines)
+# en-SG (English - Singapore)
+# en-US (English - United States)
+# en-WW (English - International)
+# en-XA (English - Arabia)
+# en-ZA (English - South Africa)
+# es-AR (Spanish - Argentina)
+# es-CL (Spanish - Chile)
+# es-ES (Spanish - Spain)
+# es-MX (Spanish - Mexico)
+# es-US (Spanish - United States)
+# es-XL (Spanish - Latin America)
+# et-EE (Estonian - Estonia)
+# fi-FI (Finnish - Finland)
+# fr-BE (French - Belgium)
+# fr-CA (French - Canada)
+# fr-CH (French - Switzerland)
+# fr-FR (French - France)
+# he-IL (Hebrew - Israel)
+# hr-HR (Croatian - Croatia)
+# hu-HU (Hungarian - Hungary)
+# it-IT (Italian - Italy)
+# ja-JP (Japanese - Japan)
+# ko-KR (Korean - Korea)
+# lt-LT (Lithuanian - Lithuania)
+# lv-LV (Latvian - Latvia)
+# nb-NO (Norwegian - Norway)
+# nl-BE (Dutch - Belgium)
+# nl-NL (Dutch - Netherlands)
+# pl-PL (Polish - Poland)
+# pt-BR (Portuguese - Brazil)
+# pt-PT (Portuguese - Portugal)
+# ro-RO (Romanian - Romania)
+# ru-RU (Russian - Russia)
+# sk-SK (Slovak - Slovak Republic)
+# sl-SL (Slovenian - Slovenia)
+# sv-SE (Swedish - Sweden)
+# th-TH (Thai - Thailand)
+# tr-TR (Turkish - Turkey)
+# uk-UA (Ukrainian - Ukraine)
+# zh-CN (Chinese - China)
+# zh-HK (Chinese - Hong Kong SAR)
+# zh-TW (Chinese - Taiwan)
+mkt="en-WW"
 
 # The idx parameter determines where to start from. 0 is the current day, 1 the previous day, etc.
 idx="0"
@@ -41,7 +101,7 @@ for picRes in "_1920x1080" "_1920x1200" "_1366x768" "_1280x720" "_1024x768"; do
 
 	# Download the Bing pic of the day
 	if curl -f -s -o "$saveDir$picName" "$picURL"; then
-		# This is needed for systemd. Replace "semkiv" with username. Probably $(whoami) can be used but I'm not sure if it will work when run by systemd
+		# This is needed for systemd
 		export DBUS_SESSION_BUS_ADDRESS="$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/$(pgrep -u semkiv -n gnome-session)/environ | cut -d= -f2-)"
 
 		# Set the GNOME3 wallpaper
