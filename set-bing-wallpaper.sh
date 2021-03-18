@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-version="1.0.0"
-
 usage_help="
 Usage: $(basename $0) [OPTIONS]
 
@@ -68,8 +66,8 @@ Options:
           \"zh-CN\" (Chinese - China),
           \"zh-HK\" (Chinese - Hong Kong SAR),
           \"zh-TW\" (Chinese - Taiwan);
-          will use \"en-WW\" if not specified
-  -n    determines the day; 0 is today, 1 - yesterday, 2 - the day before yesterday and so on;
+          will use \"auto\" if not specified
+  -n    determines the day to fetch the wallpaper of; N days ago, 0 is today, 1 - yesterday, 2 - the day before yesterday and so on;
             6 is the highest possible value;
             will use 0 if not specified
   -r    determines the resolution of the downloaded image;
@@ -96,7 +94,6 @@ Options:
             \"zoom\";
             will use \"zoom\" if not specified
   -h    show this help
-  -v    show version number
 "
 
 usage() {
@@ -169,7 +166,7 @@ verify_market() {
     ]] || usage
 }
 
-verify_days_before() {
+verify_days_ago() {
     [[
         "${1}" == "0"    \
         || "${1}" == "1" \
@@ -205,21 +202,21 @@ verify_fit() {
 }
 
 # default values; can be overridden by the command line parameters below
-market="en-WW"
-days_before="0"
+market="auto"
+days_ago="0"
 resolution="UHD"
 save_dir="$(xdg-user-dir PICTURES)"
 fit="zoom"
 
-while getopts ":m:n:r:d:f:hv" option; do
+while getopts ":m:n:r:d:f:h" option; do
     case "${option}" in
         "m")
             market="${OPTARG}"
             verify_market "${market}"
             ;;
         "n")
-            days_before="${OPTARG}"
-            verify_days_before "${days_before}"
+            days_ago="${OPTARG}"
+            verify_days_ago "${days_ago}"
             ;;
         "r")
             resolution="${OPTARG}"
@@ -235,10 +232,6 @@ while getopts ":m:n:r:d:f:hv" option; do
         "h")
             usage
             ;;
-        "v")
-            echo "${version}"
-            exit 1
-            ;;
         *)
             usage
             ;;
@@ -250,14 +243,16 @@ shift $((OPTIND - 1))
 # $bing is used to form the fully qualified URL for the Bing pic of the day
 bing="www.bing.com"
 # $xml_url is needed to get the XML data from which the relative URL for the Bing pic of the day is extracted
-xml_url="${bing}/HPImageArchive.aspx?format=xml&idx=${days_before}&n=1&mkt=${market}"
+xml_url="${bing}/HPImageArchive.aspx?format=xml&idx=${days_ago}&n=1&mkt=${market}"
 # get picture ID
-url_base="$(echo "$(curl -s "${xml_url}")" | grep -oP "<urlBase>\K(.*)(?=</urlBase>)")"
+xml="$(curl -s "${xml_url}")"
+url_base="$(echo "${xml}" | grep -oP "<urlBase>\K(.*)(?=</urlBase>)")"
+name="$(echo "${xml}" | grep -oP "<copyright>\K(.*)(?=</copyright>)" | sed "s/\//, /g")"
+echo "${name}"
 
 # fully qualified URL for the pic of the day
 url="${bing}/${url_base}_${resolution}.jpg"
 # filename of the pic
-name="$(basename "${url}")"
 
 # create $save_dir if it does not already exist
 mkdir -p "$save_dir"
@@ -266,7 +261,7 @@ logger_tag="set-bing-wallpaper"
 notification_title="Bing Wallpaper"
 
 # download the pic
-if curl -f -s -o "${save_dir}/${name}" "${url}"; then
+if curl -f -s -o "${save_dir}/${name}.jpg" "${url}"; then
     # this is needed for systemd
     export DBUS_SESSION_BUS_ADDRESS="$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/$(pgrep -u semkiv -n gnome-session)/environ | cut -d= -f2-)"
 
