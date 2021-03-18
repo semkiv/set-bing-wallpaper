@@ -29,7 +29,8 @@ You might want to run this script regularly. One way to do so is setting up a sy
     ```text
     [Unit]
     Description = "Download Bing daily background image and set it as desktop background"
-    Requires = dbus.service # the script uses DBUS session address to set the walpaper in the correct GNOME session
+    # the script uses DBUS session address to set the walpaper in the correct GNOME session
+    Requires = dbus.service
     After = dbus.service
 
     [Service]
