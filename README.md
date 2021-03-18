@@ -96,4 +96,7 @@ To get help use PowerShell `Get-Help` cmdlet:
 Get-Help -Name .\Set-BingWallpaper.ps1
 ```
 
-You can use Task Scheduler to make the script run regularly. Create a task with a "Start a Program" Action. Set "Program/script" field to `powershell.exe` and "Add arguments (optional)" field to `-NoLogo -NonInteractive -File "C:\Path\To\Your\Set-BingWallpaper.ps1"`. See [here](https://docs.microsoft.com/ru-ru/powershell/module/microsoft.powershell.core/about/about_powershell_exe) about `powershell.exe` command line options. If you need to pass some arguments to the script you can append them in this field, for example `-NoLogo -NonInteractive -File "C:\Path\To\Your\Set-BingWallpaper.ps1" -Market en-WW -DaysAgo 2 -Resolution 1920x1080`. [Learn more](https://www.windowscentral.com/how-create-automated-task-using-task-scheduler-windows-10) about creating tasks in Task Scheduler.
+You can use Task Scheduler to make the script run regularly.
+Create a task with a "Start a Program" Action. Set "Program/script" field to `powershell.exe` and "Add arguments (optional)" field to `-NoLogo -NonInteractive -File "C:\Path\To\Your\Set-BingWallpaper.ps1"`. See [here](https://docs.microsoft.com/ru-ru/powershell/module/microsoft.powershell.core/about/about_powershell_exe) about `powershell.exe` command line options.
+If you need to pass some arguments to the script you can append them in this field, for example `-NoLogo -NonInteractive -File "C:\Path\To\Your\Set-BingWallpaper.ps1" -Market en-WW -DaysAgo 2 -Resolution 1920x1080`.
+Learn more about creating tasks in Task Scheduler [here](https://www.windowscentral.com/how-create-automated-task-using-task-scheduler-windows-10).
