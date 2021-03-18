@@ -80,11 +80,10 @@ Options:
             \"1024x768\";
             will use \"UHD\" if not specified
 
-  -d,   determines the location to save the picture to;
+  -d    determines the location to save the picture to;
             will use XDG_PICTURES_DIR if not specified
-  -f,   determines fit options for the wallpaper;
+  -f    determines fit options for the wallpaper;
             available options are:
-            valid options are:
             \"centered\",
             \"none\",
             \"scaled\",
@@ -243,6 +242,7 @@ shift $((OPTIND - 1))
 # $bing is used to form the fully qualified URL for the Bing pic of the day
 bing="www.bing.com"
 # $xml_url is needed to get the XML data from which the relative URL for the Bing pic of the day is extracted
+# just FYI the equivalent JSON format can be retrieved by setting `format` in the URL below to `js`
 xml_url="${bing}/HPImageArchive.aspx?format=xml&idx=${days_ago}&n=1&mkt=${market}"
 # get picture ID
 xml="$(curl -s "${xml_url}")"
