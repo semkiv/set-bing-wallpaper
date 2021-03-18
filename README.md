@@ -34,7 +34,8 @@ You might want to run this script regularly. One way to do so is setting up a sy
 
     [Service]
     Type = oneshot
-    ExecStart = "~/.set-bing-wallpaper.sh" # do not forget to set the correct path to the script; specify command line options if you need
+    # do not forget to set the correct path to the script; specify command line options if you need
+    ExecStart = "~/.set-bing-wallpaper.sh"
 
     [Install]
     WantedBy = default.target
@@ -74,7 +75,7 @@ systemctl --user start set-bing-wallpaper.timer
 
 ## Windows
 
-The Windows version is basically the Linux version ported to PowerShell. Now the big problem with PowerShell is that Windows does not allow PowerShell scripts are not allowed to run unless they're signed. This one is not signed. Luckily Microsoft has prepared a [great article](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_signing) about how to deal with this.
+The Windows version, `Set-BingWallpaper.ps1` is basically `set-bing-wallpaper.sh` ported to PowerShell. Now the big problem with PowerShell is that Windows does not allow PowerShell scripts are not allowed to run unless they're signed. This one is not signed. Luckily Microsoft has prepared a [great article](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_signing) about how to deal with this.
 
 Just as with the Linux version of the script the downloading and storing options can be controlled via command line arguments, though the option names are different. Below are the available options:
 
