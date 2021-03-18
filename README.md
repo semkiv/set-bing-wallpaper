@@ -90,7 +90,7 @@ Just as with the Linux version of the script the downloading and storing options
 
 * `-Style` determines fit options for the wallpaper. It's the equivalent of `-f` option of the [Linux version](#Linux). Available options are: `Center`, `Fill`, `Fit`, `Span`, `Stretch`, `Tile`. `Fill` by default.
 
-To get help use Power `Get-Help` cmdlet:
+To get help use PowerShell `Get-Help` cmdlet:
 
 ```powershell
 Get-Help -Name .\Set-BingWallpaper.ps1
