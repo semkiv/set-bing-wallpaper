@@ -68,12 +68,12 @@
     Will use "auto" if not specified
 
     .PARAMETER DaysAgo
-    Provide the day to fetch the wallpaper of (N days ago, 0 is today, 1 - yesterday, 2 - the day before yesterday and so on).
+    Determines the day to fetch the wallpaper of (N days ago, 0 is today, 1 - yesterday, 2 - the day before yesterday and so on).
     6 is the highest possible value.
     Will use 0 if not specified.
 
     .PARAMETER PicRes
-    Picture resolution
+    Determines the resolution of the downloaded image
     Valid values are:
     "UHD",
     "1920x1200",
@@ -83,12 +83,12 @@
     "1024x768".
     Will use "UHD" if not specified.
 
-    .PARAMETER SaveDir
-    The path where the downloaded files will be stored.
+    .PARAMETER SaveTo
+    Determines the location to save the picture to.
     Will use %USERPROFILE%\Pictures if not specified.
 
     .PARAMETER Style
-    Provide wallpaper style.
+    Determines fit options for the wallpaper.
     Valid options are:
     "Center",
     "Fill",
@@ -100,7 +100,7 @@
 
     .EXAMPLE
     Set-Bing-WallPaper
-    Set-Bing-WallPaper -Market "en-WW" -DaysAgo 2 -PicRes "1920x1080" -SaveDir "C:\Wallpapers" -Style "Stretch"
+    Set-Bing-WallPaper -Market "en-WW" -DaysAgo 2 -PicRes "1920x1080" -SaveTo "C:\Wallpapers" -Style "Stretch"
 #>
 
 param (
@@ -185,7 +185,7 @@ param (
     [String]$PicRes = "UHD",
 
     [Parameter(Mandatory = $False)]
-    [String]$SaveDir = [Environment]::GetFolderPath("MyPictures"),
+    [String]$SaveTo = [Environment]::GetFolderPath("MyPictures"),
 
     [Parameter(Mandatory = $False)]
     [ValidateSet(
@@ -269,17 +269,18 @@ Function Set-Wallpaper {
 }
 
 $Bing = "www.bing.com"
+# just FYI the equivalent JSON format can be retrieved by setting `format` in the URL below to `js`
 $XmlUrl = "${Bing}/HPImageArchive.aspx?format=xml&idx=${DaysAgo}&n=1&mkt=${Market}"
 
 [Xml]$Xml = (Invoke-WebRequest -Uri $XmlUrl -UseBasicParsing).Content
 $UrlBase = $Xml.images.image.urlBase
 $PicName = "$($Xml.images.image.copyright).jpg".Split([IO.Path]::GetInvalidFileNameChars()) -join ''
 $PicUrl = "${Bing}/${UrlBase}_${PicRes}.jpg"
-$FullPath = "${SaveDir}/${PicName}"
+$FullPath = "${SaveTo}/${PicName}"
 
 Try {
     Invoke-WebRequest -Uri $PicUrl -UseBasicParsing -ErrorAction Stop -OutFile $FullPath
-    Write-Output "Downloaded '${PicName}' to '${SaveDir}'."
+    Write-Output "Downloaded '${PicName}' to '${SaveTo}'."
     Set-Wallpaper $FullPath $Style
     Write-Output "Set as desktop wallpaper."
 }
