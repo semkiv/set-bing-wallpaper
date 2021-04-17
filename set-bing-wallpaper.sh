@@ -100,6 +100,13 @@ usage() {
     exit 1
 }
 
+inform() {
+    # send a notification
+    notify-send "Bing Wallpaper" "$1"
+    # create a log entry
+    logger -t "set-bing-wallpaper" "$1"
+}
+
 verify_market() {
     [[
         "${1}" == "auto"  \
@@ -248,7 +255,6 @@ xml_url="${bing}/HPImageArchive.aspx?format=xml&idx=${days_ago}&n=1&mkt=${market
 xml="$(curl -s "${xml_url}")"
 url_base="$(echo "${xml}" | grep -oP "<urlBase>\K(.*)(?=</urlBase>)")"
 name="$(echo "${xml}" | grep -oP "<copyright>\K(.*)(?=</copyright>)" | sed "s/\//, /g")"
-echo "${name}"
 
 # fully qualified URL for the pic of the day
 url="${bing}/${url_base}_${resolution}.jpg"
@@ -257,35 +263,24 @@ url="${bing}/${url_base}_${resolution}.jpg"
 # create $save_dir if it does not already exist
 mkdir -p "$save_dir"
 
-logger_tag="set-bing-wallpaper"
-notification_title="Bing Wallpaper"
-
 # download the pic
 if curl -f -s -o "${save_dir}/${name}.jpg" "${url}"; then
     # this is needed for systemd
-    export DBUS_SESSION_BUS_ADDRESS="$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/$(pgrep -u semkiv -n gnome-session)/environ | cut -d= -f2-)"
+    DBUS_SESSION_BUS_ADDRESS="$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/"$(pgrep -u "$(whoami)" -n gnome-session)"/environ | cut -d= -f2-)"
+    export DBUS_SESSION_BUS_ADDRESS
 
     # set the GNOME3 wallpaper
-    dconf write "/org/gnome/desktop/background/picture-uri" "\"file://${save_dir}/${name}\""
+    if gsettings set "org.gnome.desktop.background" "picture-uri" "\"file://${save_dir}/${name}.jpg\"" && gsettings set "org.gnome.desktop.background" "picture-options" "\"${fit}\""; then
+        inform "Bing picture of the day \"${name}\" has been downloaded and set as your desktop wallpaper"
+        # exit the script successfully
+        exit 0
+    fi
 
-    # set the GNOME 3 wallpaper picture options
-    dconf write "/org/gnome/desktop/background/picture-options" "\"${fit}\""
-
-    message="Bing picture of the day \"${name}\" has been downloaded and set as your desktop wallpaper"
-    # send a notification
-    notify-send "Bing wallpaper" "${message}" -c "transfer.complete"
-    # create a log entry
-    logger -t "${logger_tag}" "${message}"
-
-    # exit the script successfully
-    exit 0
+    inform "Setting the wallpaper failed. Command returned error"
+    # exit the script with an error
+    exit 1
 fi
 
-message="Setting the wallpaper failed. Cannot download the picture"
-# send a notification
-notify-send "${notification_title}" "${message}" -c "transfer.error"
-# create a log entry
-logger -t "${logger_tag}" "${message}"
-
+inform "Setting the wallpaper failed. Cannot download the picture"
 # exit the script with an error
 exit 1
