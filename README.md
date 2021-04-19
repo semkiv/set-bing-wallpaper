@@ -29,11 +29,8 @@ You might want to run this script regularly. One way to do so is setting up a sy
     ```text
     [Unit]
     Description = "Download Bing daily background image and set it as desktop background"
-    # the script uses DBUS session address to set the walpaper in the correct GNOME session
-    Wants = dbus.service
-    Wants = network-online.target
-    After = dbus.service
-    After = network-online.target
+    Wants = gnome-session.target network-online.target
+    After = gnome-session.target network-online.target
 
     [Service]
     Type = oneshot
@@ -71,10 +68,6 @@ Finally run the timer
 ```bash
 systemctl --user start set-bing-wallpaper.timer
 ```
-
-### Known issues
-
-* Because `systemd -user` is run earlier than gnome-shell (and earlier than `DBUS_SESSION_BUS_ADDRESS` environment variable is set) the run just after login (caused by persistent timer in case of missed run) will fail. For possible solution see [this thread](https://bbs.archlinux.org/viewtopic.php?id=197223).
 
 ## Windows
 
