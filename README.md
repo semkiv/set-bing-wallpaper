@@ -30,13 +30,15 @@ You might want to run this script regularly. One way to do so is setting up a sy
     [Unit]
     Description = "Download Bing daily background image and set it as desktop background"
     # the script uses DBUS session address to set the walpaper in the correct GNOME session
-    Requires = dbus.service
+    Wants = dbus.service
+    Wants = network-online.target
     After = dbus.service
+    After = network-online.target
 
     [Service]
     Type = oneshot
     # do not forget to set the correct path to the script; specify command line options if you need
-    ExecStart = "~/.set-bing-wallpaper.sh"
+    ExecStart = "/home/linuxuser/.set-bing-wallpaper.sh"
 
     [Install]
     WantedBy = default.target
