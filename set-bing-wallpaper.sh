@@ -100,11 +100,17 @@ usage() {
     exit 1
 }
 
-inform() {
-    # send a notification
-    notify-send "Bing Wallpaper" "$1"
-    # create a log entry
+log() {
     logger -t "set-bing-wallpaper" "$1"
+}
+
+notify() {
+    notify-send "Bing Wallpaper" "$1"
+}
+
+inform() {
+    log "$1"
+    notify "$1"
 }
 
 verify_market() {
@@ -248,23 +254,28 @@ shift $((OPTIND - 1))
 
 # $bing is used to form the fully qualified URL for the Bing pic of the day
 bing="www.bing.com"
+
+# check Internet connection
+if ! curl -f -s --retry 10 --retry-all-errors --retry-max-time 60 "${bing}" > /dev/null; then
+    inform "No Internet connection"
+fi
+
 # $xml_url is needed to get the XML data from which the relative URL for the Bing pic of the day is extracted
 # just FYI the equivalent JSON format can be retrieved by setting `format` in the URL below to `js`
 xml_url="${bing}/HPImageArchive.aspx?format=xml&idx=${days_ago}&n=1&mkt=${market}"
 # get picture ID
-xml="$(curl -s "${xml_url}")"
+xml="$(curl -f -s "${xml_url}")"
 url_base="$(echo "${xml}" | grep -oP "<urlBase>\K(.*)(?=</urlBase>)")"
 name="$(echo "${xml}" | grep -oP "<copyright>\K(.*)(?=</copyright>)" | sed "s/\//, /g")"
 
 # fully qualified URL for the pic of the day
 url="${bing}/${url_base}_${resolution}.jpg"
-# filename of the pic
 
 # create $save_dir if it does not already exist
 mkdir -p "$save_dir"
 
 # download the pic
-if curl -f -s -o "${save_dir}/${name}.jpg" "${url}"; then
+if curl -f -o "${save_dir}/${name}.jpg" -s "${url}"; then
     # this is needed for systemd
     DBUS_SESSION_BUS_ADDRESS="$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/"$(pgrep -u "$(whoami)" -n gnome-session)"/environ | cut -d= -f2-)"
     export DBUS_SESSION_BUS_ADDRESS
