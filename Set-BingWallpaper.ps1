@@ -106,68 +106,68 @@
 param (
     [Parameter(Mandatory = $False)]
     [ValidateSet(
-        "auto",
-        "ar-XA",
-        "bg-BG",
-        "cs-CZ",
-        "da-DK",
-        "de-AT",
-        "de-CH",
-        "de-DE",
-        "el-GR",
-        "en-AU",
-        "en-CA",
-        "en-GB",
-        "en-ID",
-        "en-IE",
-        "en-IN",
-        "en-MY",
-        "en-NZ",
-        "en-PH",
-        "en-SG",
-        "en-US",
-        "en-WW",
-        "en-XA",
-        "en-ZA",
-        "es-AR",
-        "es-CL",
-        "es-ES",
-        "es-MX",
-        "es-US",
-        "es-XL",
-        "et-EE",
-        "fi-FI",
-        "fr-BE",
-        "fr-CA",
-        "fr-CH",
-        "fr-FR",
-        "he-IL",
-        "hr-HR",
-        "hu-HU",
-        "it-IT",
-        "ja-JP",
-        "ko-KR",
-        "lt-LT",
-        "lv-LV",
-        "nb-NO",
-        "nl-BE",
-        "nl-NL",
-        "pl-PL",
-        "pt-BR",
-        "pt-PT",
-        "ro-RO",
-        "ru-RU",
-        "sk-SK",
-        "sl-SL",
-        "sv-SE",
-        "th-TH",
-        "tr-TR",
-        "uk-UA",
-        "zh-CN",
-        "zh-HK",
-        "zh-TW"
+        'auto',
+        'ar-XA',
+        'bg-BG',
+        'cs-CZ',
+        'da-DK',
+        'de-AT',
+        'de-CH',
+        'de-DE',
+        'el-GR',
+        'en-AU',
+        'en-CA',
+        'en-GB',
+        'en-ID',
+        'en-IE',
+        'en-IN',
+        'en-MY',
+        'en-NZ',
+        'en-PH',
+        'en-SG',
+        'en-US',
+        'en-WW',
+        'en-XA',
+        'en-ZA',
+        'es-AR',
+        'es-CL',
+        'es-ES',
+        'es-MX',
+        'es-US',
+        'es-XL',
+        'et-EE',
+        'fi-FI',
+        'fr-BE',
+        'fr-CA',
+        'fr-CH',
+        'fr-FR',
+        'he-IL',
+        'hr-HR',
+        'hu-HU',
+        'it-IT',
+        'ja-JP',
+        'ko-KR',
+        'lt-LT',
+        'lv-LV',
+        'nb-NO',
+        'nl-BE',
+        'nl-NL',
+        'pl-PL',
+        'pt-BR',
+        'pt-PT',
+        'ro-RO',
+        'ru-RU',
+        'sk-SK',
+        'sl-SL',
+        'sv-SE',
+        'th-TH',
+        'tr-TR',
+        'uk-UA',
+        'zh-CN',
+        'zh-HK',
+        'zh-TW'
     )]
-    [String]$Market = "auto",
+    [String]$Market = 'auto',
 
     [Parameter(Mandatory = $False)]
     [ValidateRange(0, 7)]
@@ -175,28 +175,28 @@ param (
 
     [Parameter(Mandatory = $False)]
     [ValidateSet(
-        "UHD",
-        "1920x1080",
-        "1920x1200",
-        "1366x768",
-        "1280x720",
-        "1024x768"
+        'UHD',
+        '1920x1080',
+        '1920x1200',
+        '1366x768',
+        '1280x720',
+        '1024x768'
     )]
-    [String]$PicRes = "UHD",
+    [String]$PicRes = 'UHD',
 
     [Parameter(Mandatory = $False)]
-    [String]$SaveTo = [Environment]::GetFolderPath("MyPictures"),
+    [String]$SaveTo = [Environment]::GetFolderPath('MyPictures'),
 
     [Parameter(Mandatory = $False)]
     [ValidateSet(
-        "Center",
-        "Fill",
-        "Fit",
-        "Span",
-        "Stretch",
-        "Tile"
+        'Center',
+        'Fill',
+        'Fit',
+        'Span',
+        'Stretch',
+        'Tile'
     )]
-    [String]$Style = "Fill"
+    [String]$Style = 'Fill'
 )
 
 Function Set-Wallpaper {
@@ -222,27 +222,27 @@ Function Set-Wallpaper {
         # Provide wallpaper style that you would like applied
         [Parameter(Mandatory = $False)]
         [ValidateSet(
-            "Center",
-            "Fill",
-            "Fit",
-            "Span",
-            "Stretch",
-            "Tile"
+            'Center',
+            'Fill',
+            'Fit',
+            'Span',
+            'Stretch',
+            'Tile'
         )]
-        [String]$Style = "Fill"
+        [String]$Style = 'Fill'
     )
 
     $WallpaperStyle = Switch ($Style) {
-        "Center" { "0" }
-        "Fill" { "10" }
-        "Fit" { "6" }
-        "Span" { "22" }
-        "Stretch" { "2" }
-        "Tile" { "0" }
+        'Center' { '0' }
+        'Fill' { '10' }
+        'Fit' { '6' }
+        'Span' { '22' }
+        'Stretch' { '2' }
+        'Tile' { '0' }
     }
 
-    New-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "WallpaperStyle" -PropertyType String -Value $WallpaperStyle -Force | Out-Null
-    New-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "TileWallpaper" -PropertyType String -Value $(If ($Style -eq "Tile") { 1 } Else { 0 }) -Force | Out-Null
+    New-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name 'WallpaperStyle' -PropertyType String -Value $WallpaperStyle -Force | Out-Null
+    New-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name 'TileWallpaper' -PropertyType String -Value $(If ($Style -eq 'Tile') { 1 } Else { 0 }) -Force | Out-Null
 
     Add-Type -TypeDefinition "
         using System;
@@ -268,18 +268,18 @@ Function Set-Wallpaper {
     [Void] [Params]::SystemParametersInfo($SPI_SETDESKWALLPAPER, 0, $Image, $fWinIni)
 }
 
-$Bing = "www.bing.com"
+$Bing = 'www.bing.com'
 # just FYI the equivalent JSON format can be retrieved by setting `format` in the URL below to `js`
 $XmlUrl = "${Bing}/HPImageArchive.aspx?format=xml&idx=${DaysAgo}&n=1&mkt=${Market}"
 
 [Xml]$Xml = (Invoke-WebRequest -Uri $XmlUrl -UseBasicParsing).Content
 $UrlBase = $Xml.images.image.urlBase
-$PicName = "$($Xml.images.image.copyright).jpg".Split([IO.Path]::GetInvalidFileNameChars()) -join ''
 $PicUrl = "${Bing}/${UrlBase}_${PicRes}.jpg"
-$FullPath = "${SaveTo}/${PicName}"
 
 Try {
-    Invoke-WebRequest -Uri $PicUrl -UseBasicParsing -ErrorAction Stop -OutFile $FullPath
+    $PicName = "$($Xml.images.image.copyright).jpg".Split([IO.Path]::GetInvalidFileNameChars()) -join ''
+    $FullPath = Join-Path ${SaveTo} ${PicName}
+    Invoke-WebRequest -Uri $PicUrl -UseBasicParsing -ErrorAction Stop -OutFile (New-Item -Path $FullPath -Force)
     Write-Output "Downloaded '${PicName}' to '${SaveTo}'."
     Set-Wallpaper $FullPath $Style
     Write-Output "Set as desktop wallpaper."
