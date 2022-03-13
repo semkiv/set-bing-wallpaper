@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 usage_help="
-Usage: $(basename $0) [OPTIONS]
+Usage: $(basename "$0") [OPTIONS]
 
 Options:
   -m    Determines which Bing market you would like to obtain images from;
