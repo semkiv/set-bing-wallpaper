@@ -252,7 +252,7 @@ $XmlUrl = "${Bing}/HPImageArchive.aspx?format=xml&idx=${DaysAgo}&n=1&mkt=${Marke
 
 [Xml]$Xml = (Invoke-WebRequest -Uri $XmlUrl -UseBasicParsing).Content
 $UrlBase = $Xml.images.image.urlBase
-$PicUrl = "${Bing}/${UrlBase}_UHD.jpg&w=3840&h=2160"
+$PicUrl = "${Bing}/${UrlBase}_UHD.jpg&w=3840&h=2160&rs=1"
 
 Try {
     $PicName = "$($Xml.images.image.copyright).jpg".Split([IO.Path]::GetInvalidFileNameChars()) -join ''
