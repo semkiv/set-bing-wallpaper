@@ -243,7 +243,7 @@ url_base="$(echo "${xml}" | grep -oP "<urlBase>\K(.*)(?=</urlBase>)")"
 name="$(echo "${xml}" | grep -oP "<copyright>\K(.*)(?=</copyright>)" | sed "s/\//, /g")"
 
 # fully qualified URL for the pic of the day
-url="${bing}/${url_base}_UHD.jpg&w=3840&h=2160"
+url="${bing}/${url_base}_UHD.jpg&w=3840&h=2160&rs=1"
 
 # create $save_dir if it does not already exist
 mkdir -p "$save_dir"
