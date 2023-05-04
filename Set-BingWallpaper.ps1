@@ -72,17 +72,6 @@
     6 is the highest possible value.
     Will use 0 if not specified.
 
-    .PARAMETER PicRes
-    Determines the resolution of the downloaded image
-    Valid values are:
-    "UHD",
-    "1920x1200",
-    "1920x1080",
-    "1366x768",
-    "1280x720",
-    "1024x768".
-    Will use "UHD" if not specified.
-
     .PARAMETER SaveTo
     Determines the location to save the picture to.
     Will use %USERPROFILE%\Pictures if not specified.
@@ -100,7 +89,7 @@
 
     .EXAMPLE
     Set-Bing-WallPaper
-    Set-Bing-WallPaper -Market "en-WW" -DaysAgo 2 -PicRes "1920x1080" -SaveTo "C:\Wallpapers" -Style "Stretch"
+    Set-Bing-WallPaper -Market "en-WW" -DaysAgo 2 -SaveTo "C:\Wallpapers" -Style "Stretch"
 #>
 
 param (
@@ -172,17 +161,6 @@ param (
     [Parameter(Mandatory = $False)]
     [ValidateRange(0, 7)]
     [Uint32]$DaysAgo = 0,
-
-    [Parameter(Mandatory = $False)]
-    [ValidateSet(
-        'UHD',
-        '1920x1080',
-        '1920x1200',
-        '1366x768',
-        '1280x720',
-        '1024x768'
-    )]
-    [String]$PicRes = 'UHD',
 
     [Parameter(Mandatory = $False)]
     [String]$SaveTo = [Environment]::GetFolderPath('MyPictures'),
@@ -274,7 +252,7 @@ $XmlUrl = "${Bing}/HPImageArchive.aspx?format=xml&idx=${DaysAgo}&n=1&mkt=${Marke
 
 [Xml]$Xml = (Invoke-WebRequest -Uri $XmlUrl -UseBasicParsing).Content
 $UrlBase = $Xml.images.image.urlBase
-$PicUrl = "${Bing}/${UrlBase}_${PicRes}.jpg"
+$PicUrl = "${Bing}/${UrlBase}_UHD.jpg&w=3840&h=2160"
 
 Try {
     $PicName = "$($Xml.images.image.copyright).jpg".Split([IO.Path]::GetInvalidFileNameChars()) -join ''
