@@ -70,16 +70,6 @@ Options:
   -n    determines the day to fetch the wallpaper of; N days ago, 0 is today, 1 - yesterday, 2 - the day before yesterday and so on;
             6 is the highest possible value;
             will use 0 if not specified
-  -r    determines the resolution of the downloaded image;
-            available options are:
-            \"UHD\",
-            \"1920x1200\",
-            \"1920x1080\",
-            \"1366x768\",
-            \"1280x720\",
-            \"1024x768\";
-            will use \"UHD\" if not specified
-
   -d    determines the location to save the picture to;
             will use XDG_PICTURES_DIR if not specified
   -f    determines fit options for the wallpaper;
@@ -190,17 +180,6 @@ verify_days_ago() {
     ]] || usage
 }
 
-verify_resolution() {
-    [[
-        "${1}" == "UHD"          \
-        || "${1}" == "1920x1200" \
-        || "${1}" == "1920x1080" \
-        || "${1}" == "1366x768"  \
-        || "${1}" == "1280x720"  \
-        || "${1}" == "1024x768"  \
-    ]] || usage
-}
-
 verify_fit() {
     [[
         "${1}" == "centered"     \
@@ -216,7 +195,6 @@ verify_fit() {
 # default values; can be overridden by the command line parameters below
 market="auto"
 days_ago="0"
-resolution="UHD"
 save_dir="$(xdg-user-dir PICTURES)"
 fit="zoom"
 
@@ -229,10 +207,6 @@ while getopts ":m:n:r:d:f:h" option; do
         "n")
             days_ago="${OPTARG}"
             verify_days_ago "${days_ago}"
-            ;;
-        "r")
-            resolution="${OPTARG}"
-            verify_resolution "${resolution}"
             ;;
         "d")
             save_dir="${OPTARG}"
@@ -269,7 +243,7 @@ url_base="$(echo "${xml}" | grep -oP "<urlBase>\K(.*)(?=</urlBase>)")"
 name="$(echo "${xml}" | grep -oP "<copyright>\K(.*)(?=</copyright>)" | sed "s/\//, /g")"
 
 # fully qualified URL for the pic of the day
-url="${bing}/${url_base}_${resolution}.jpg"
+url="${bing}/${url_base}_UHD.jpg&w=3840&h=2160"
 
 # create $save_dir if it does not already exist
 mkdir -p "$save_dir"
