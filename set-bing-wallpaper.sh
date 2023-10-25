@@ -192,6 +192,18 @@ verify_fit() {
     ]] || usage
 }
 
+set_gnome_wallpaper() {
+    # set the GNOME3 wallpaper, both light and dark variants
+    for option in "picture-uri" "picture-uri-dark"; do
+        if ! (gsettings set "org.gnome.desktop.background" "${option}" "\"file://${1}\"" && gsettings set "org.gnome.desktop.background" "picture-options" "\"${2}\""); then
+            error=$?
+            inform "Setting the wallpaper failed. Command returned error ${error}"
+            # exit function with an error
+            return $error
+        fi
+    done
+}
+
 # default values; can be overridden by the command line parameters below
 market="auto"
 days_ago="0"
@@ -254,18 +266,19 @@ if curl -f -o "${save_dir}/${name}.jpg" -s "${url}"; then
     DBUS_SESSION_BUS_ADDRESS="$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/"$(pgrep -u "$(whoami)" -n gnome-session)"/environ | cut -d= -f2-)"
     export DBUS_SESSION_BUS_ADDRESS
 
-    # set the GNOME3 wallpaper
-    if gsettings set "org.gnome.desktop.background" "picture-uri" "\"file://${save_dir}/${name}.jpg\"" && gsettings set "org.gnome.desktop.background" "picture-options" "\"${fit}\""; then
+    if set_gnome_wallpaper "${save_dir}/${name}.jpg" "${fit}"; then
         inform "Bing picture of the day \"${name}\" has been downloaded and set as your desktop wallpaper"
         # exit the script successfully
         exit 0
     fi
 
-    inform "Setting the wallpaper failed. Command returned error"
+    error=$?
+    inform "Setting the wallpaper failed. Command returned error ${error}"
     # exit the script with an error
-    exit 1
+    exit $error
 fi
 
-inform "Setting the wallpaper failed. Cannot download the picture"
+error=$?
+inform "Setting the wallpaper failed. Cannot download the picture ${error}"
 # exit the script with an error
-exit 1
+exit $error
