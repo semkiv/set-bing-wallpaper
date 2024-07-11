@@ -255,7 +255,7 @@ $UrlBase = $Xml.images.image.urlBase
 $PicUrl = "${Bing}/${UrlBase}_UHD.jpg&w=3840&h=2160&rs=1"
 
 Try {
-    $PicName = "$($Xml.images.image.copyright).jpg".Split([IO.Path]::GetInvalidFileNameChars()) -join ''
+    $PicName = "$($Xml.images.image.copyright).jpg".Split([IO.Path]::GetInvalidFileNameChars()) -join ', '
     $FullPath = Join-Path ${SaveTo} ${PicName}
     Invoke-WebRequest -Uri $PicUrl -UseBasicParsing -ErrorAction Stop -OutFile (New-Item -Path $FullPath -Force)
     Write-Output "Downloaded '${PicName}' to '${SaveTo}'."
