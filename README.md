@@ -56,6 +56,28 @@ You might want to run this script regularly. One way to do so is setting up a sy
     WantedBy = timers.target
     ```
 
+    <details>
+
+    <summary>Note on NetworkManager</summary>
+    
+    If the network is managed by NetworkManager, `NetworkManager-wait-online.service` should be used instead of `network-online.target` in the unit file above. In that case keep in mind that this service can have a bit odd defaults: (at least) on some distros it runs `nm-online` with the `-s` switch which makes it wait for the NetworkManager startup instead of an actual connection.
+    This can be changed by editing the unit file. Run:
+
+    ```bash
+    sudo systemctl edit NetworkManager-wait-online.service
+    ```
+
+    Add the following override:
+
+    ```bash
+    [Service]
+    ExecStart=
+    ExecStart=/usr/bin/nm-online -q
+    ```
+
+    Finally reload the daemons: `sudo systemctl daemon-reload`.
+    </details>
+
 Then enable the service and the timer:
 
 ```bash
