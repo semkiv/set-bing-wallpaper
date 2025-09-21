@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -o pipefail
+
 usage_help="
 Usage: $(basename "$0") [OPTIONS]
 
@@ -195,7 +197,7 @@ verify_fit() {
 set_gnome_wallpaper() {
     # set the GNOME3 wallpaper, both light and dark variants
     for option in "picture-uri" "picture-uri-dark"; do
-        if ! (gsettings set "org.gnome.desktop.background" "${option}" "\"file://${1}\"" && gsettings set "org.gnome.desktop.background" "picture-options" "\"${2}\""); then
+        if ! (gsettings set "org.gnome.desktop.background" "${option}" "\"${1}\"" && gsettings set "org.gnome.desktop.background" "picture-options" "\"${2}\""); then
             error=$?
             inform "Setting the wallpaper failed. Command returned error ${error}"
             # exit function with an error
@@ -241,11 +243,6 @@ shift $((OPTIND - 1))
 # $bing is used to form the fully qualified URL for the Bing pic of the day
 bing="www.bing.com"
 
-# check Internet connection
-if ! curl -f -s --retry 10 --retry-all-errors --retry-max-time 60 "${bing}" > /dev/null; then
-    inform "No Internet connection"
-fi
-
 # $xml_url is needed to get the XML data from which the relative URL for the Bing pic of the day is extracted
 # just FYI the equivalent JSON format can be retrieved by setting `format` in the URL below to `js`
 xml_url="${bing}/HPImageArchive.aspx?format=xml&idx=${days_ago}&n=1&mkt=${market}"
@@ -261,7 +258,7 @@ url="${bing}/${url_base}_UHD.jpg&w=3840&h=2160&rs=1"
 mkdir -p "$save_dir"
 
 # download the pic
-if curl -f -o "${save_dir}/${name}.jpg" -s "${url}"; then
+if curl -f -s "${url}" | gio save "${save_dir}/${name}.jpg"; then
     # this is needed for systemd
     DBUS_SESSION_BUS_ADDRESS="$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/"$(pgrep -u "$(whoami)" -n gnome-session)"/environ | cut -d= -f2-)"
     export DBUS_SESSION_BUS_ADDRESS
