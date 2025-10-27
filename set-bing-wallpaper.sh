@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -o pipefail
+set -o errexit -o nounset -o pipefail
 
 usage_help="
 Usage: $(basename "$0") [OPTIONS]
@@ -93,16 +93,52 @@ usage() {
 }
 
 log() {
-    logger -t "set-bing-wallpaper" "$1"
+    local -r priority="${1}"
+    local -r message="${2}"
+    echo "${message}" | systemd-cat --identifier "set-bing-wallpaper" --priority "${priority}"
+}
+
+log_info() {
+    local -r message="${1}"
+    log "info" "${message}"
+}
+
+log_error() {
+    local -r message="${1}"
+    log "error" "${message}"
 }
 
 notify() {
-    notify-send "Bing Wallpaper" "$1"
+    local -r icon="${1}"
+    local -r summary="${2}"
+    local -r body="${3}"
+    notify-send --app-name "Daily Bing Wallpaper" --icon "${icon}" "${summary}" "${body}"
 }
 
-inform() {
-    log "$1"
-    notify "$1"
+notify_info() {
+    local -r summary="${1}"
+    local -r body="${2}"
+    notify "image-x-generic" "${summary}" "${body}"
+}
+
+notify_error() {
+    local -r summary="${1}"
+    local -r body="${2}"
+    notify "image-missing" "${summary}" "${body}"
+}
+
+report_info() {
+    local -r summary="${1}"
+    local -r body="${2}"
+    log_info "${summary}. ${body}"
+    notify_info "${summary}" "${body}"
+}
+
+report_error() {
+    local -r summary="${1}"
+    local -r body="${2}"
+    log_error "${summary}. ${body}"
+    notify_error "${summary}" "${body}"
 }
 
 verify_market() {
@@ -198,10 +234,9 @@ set_gnome_wallpaper() {
     # set the GNOME3 wallpaper, both light and dark variants
     for option in "picture-uri" "picture-uri-dark"; do
         if ! (gsettings set "org.gnome.desktop.background" "${option}" "\"${1}\"" && gsettings set "org.gnome.desktop.background" "picture-options" "\"${2}\""); then
-            error=$?
-            inform "Setting the wallpaper failed. Command returned error ${error}"
-            # exit function with an error
-            return $error
+            local -r error=${?}
+            report_error "Setting the wallpaper failed" "Error ${error}"
+            return "${error}"
         fi
     done
 }
@@ -247,7 +282,7 @@ bing="www.bing.com"
 # just FYI the equivalent JSON format can be retrieved by setting `format` in the URL below to `js`
 xml_url="${bing}/HPImageArchive.aspx?format=xml&idx=${days_ago}&n=1&mkt=${market}"
 # get picture ID
-xml="$(curl -f -s "${xml_url}")"
+xml="$(curl --fail --silent --retry 10 --retry-max-time 60 "${xml_url}")"
 url_base="$(echo "${xml}" | grep -oP "<urlBase>\K(.*)(?=</urlBase>)")"
 name="$(echo "${xml}" | grep -oP "<copyright>\K(.*)(?=</copyright>)" | sed "s/\//, /g")"
 
@@ -255,27 +290,21 @@ name="$(echo "${xml}" | grep -oP "<copyright>\K(.*)(?=</copyright>)" | sed "s/\/
 url="${bing}/${url_base}_UHD.jpg&w=3840&h=2160&rs=1"
 
 # create $save_dir if it does not already exist
-mkdir -p "$save_dir"
+mkdir -p "${save_dir}"
 
 # download the pic
-if curl -f -s "${url}" | gio save "${save_dir}/${name}.jpg"; then
-    # this is needed for systemd
-    DBUS_SESSION_BUS_ADDRESS="$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/"$(pgrep -u "$(whoami)" -n gnome-session)"/environ | cut -d= -f2-)"
-    export DBUS_SESSION_BUS_ADDRESS
-
-    if set_gnome_wallpaper "${save_dir}/${name}.jpg" "${fit}"; then
-        inform "Bing picture of the day \"${name}\" has been downloaded and set as your desktop wallpaper"
-        # exit the script successfully
-        exit 0
-    fi
-
-    error=$?
-    inform "Setting the wallpaper failed. Command returned error ${error}"
-    # exit the script with an error
-    exit $error
+curl --fail --silent --retry 10 --retry-max-time 60 --output "${save_dir}/${name}.jpg" "${url}"
+exit_code=${?}
+if [[ exit_code -ne 0 ]]; then
+    report_error "Cannot download the picture" "Error ${exit_code}"
+    exit "${exit_code}"
 fi
 
-error=$?
-inform "Setting the wallpaper failed. Cannot download the picture ${error}"
-# exit the script with an error
-exit $error
+set_gnome_wallpaper "file://${save_dir}/${name}.jpg" "${fit}"
+exit_code=${?}
+if [[ exit_code -ne 0 ]]; then
+    report_error "Failed to set the wallpaper" "Error ${exit_code}"
+    exit "${exit_code}"
+fi
+
+report_info "Wallpaper updated" "\"${name}\" has been downloaded and set as your desktop wallpaper"
