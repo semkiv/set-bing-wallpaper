@@ -282,9 +282,9 @@ bing="www.bing.com"
 # just FYI the equivalent JSON format can be retrieved by setting `format` in the URL below to `js`
 xml_url="${bing}/HPImageArchive.aspx?format=xml&idx=${days_ago}&n=1&mkt=${market}"
 # get picture ID
-xml="$(curl --fail --silent --retry 10 --retry-max-time 60 "${xml_url}")"
+xml="$(curl --fail --silent --show-error --retry 10 --retry-max-time 60 "${xml_url}")"
 url_base="$(echo "${xml}" | grep -oP "<urlBase>\K(.*)(?=</urlBase>)")"
-name="$(echo "${xml}" | grep -oP "<copyright>\K(.*)(?=</copyright>)" | sed "s/\//, /g")"
+name="$(echo "${xml}" | grep -oP "<copyright>\K(.*)(?=</copyright>)" | sed "s/\//, /g" | sed "s/:/,/g")"
 
 # fully qualified URL for the pic of the day
 url="${bing}/${url_base}_UHD.jpg&w=3840&h=2160&rs=1"
@@ -293,7 +293,7 @@ url="${bing}/${url_base}_UHD.jpg&w=3840&h=2160&rs=1"
 mkdir -p "${save_dir}"
 
 # download the pic
-curl --fail --silent --retry 10 --retry-max-time 60 --output "${save_dir}/${name}.jpg" "${url}"
+curl --fail --silent --show-error --retry 10 --retry-max-time 60 --output "${save_dir}/${name}.jpg" "${url}"
 exit_code=${?}
 if [[ exit_code -ne 0 ]]; then
     report_error "Cannot download the picture" "Error ${exit_code}"
